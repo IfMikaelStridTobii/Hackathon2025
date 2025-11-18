@@ -37,6 +37,7 @@ D:/projects/hackathon2025/sample_wpf/obj/Debug/net9.0-windows/sample_wpf.pdb
 D:/projects/hackathon2025/sample_wpf/obj/Debug/net9.0-windows/sample_wpf.genruntimeconfig.cache
 D:/projects/hackathon2025/sample_wpf/obj/Debug/net9.0-windows/ref/sample_wpf.dll
 /mnt/d/projects/hackathon2025/sample_wpf/obj/Debug/net9.0-windows/sample_wpf.sourcelink.json
+D:/projects/hackathon2025/sample_wpf/obj/Debug/net9.0-windows/sample_wpf.sourcelink.json
 D:\projects\hackathon2025\sample_wpf\bin\Debug\net9.0-windows\sample_wpf.exe
 D:\projects\hackathon2025\sample_wpf\bin\Debug\net9.0-windows\sample_wpf.deps.json
 D:\projects\hackathon2025\sample_wpf\bin\Debug\net9.0-windows\sample_wpf.runtimeconfig.json

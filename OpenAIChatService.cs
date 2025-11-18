@@ -11,7 +11,7 @@ public sealed class OpenAIChatService : IDisposable
     private readonly string _model;
     private bool _disposeHttpClient;
 
-    public OpenAIChatService(HttpClient? httpClient = null, string? apiKey = null, string model = "gpt-5")
+    public OpenAIChatService(HttpClient? httpClient = null, string? apiKey = null, string model = "gpt-4o-mini")
     {
         _httpClient = httpClient ?? new HttpClient();
         _disposeHttpClient = httpClient is null;
@@ -29,6 +29,28 @@ public sealed class OpenAIChatService : IDisposable
         _model = model;
     }
 
+    private const string AppGuide = """
+The desktop app hosting you is called "OpenAI Chat Console". It has two tabs:
+1. Chat tab: prompt box, Send button, status message, and read-only response output.
+2. Todo List tab: textbox labeled "Enter a todo item", Add button, and a list with Remove buttons beside each entry.
+
+When users ask questions about navigating or using the app (for example, how to add or remove todo items), explain the steps clearly based on that UI. Keep answers concise and focus on helping them use the app features.
+""";
+
+    private const string CodeContext = """
+Key classes:
+- sample_wpf.MainWindow (code-behind) owns ObservableCollection<string> Todos, sets the window DataContext, and provides:
+  * SendButton_Click: validates PromptTextBox, calls OpenAIChatService, updates ResponseTextBox and StatusTextBlock, manages CancellationTokenSource.
+  * AddTodo_Click: trims TodoInputTextBox text, appends to Todos, clears and refocuses the input.
+  * RemoveTodo_Click: removes the string bound to the clicked Remove button from Todos.
+  * OnClosed: cancels any in-flight request and disposes OpenAIChatService.
+- sample_wpf.OpenAIChatService wraps HttpClient, loads OPENAI_API_KEY, POSTs to /v1/chat/completions with gpt-4o-mini, and returns the first choice message or throws with details on failure.
+
+XAML wiring highlights:
+- MainWindow hosts a TabControl with Chat and Todo List tabs.
+- Todo tab ListBox ItemsSource binds to Todos; each item template includes the Remove button executing RemoveTodo_Click.
+""";
+
     public async Task<string> GetChatCompletionAsync(string prompt, CancellationToken cancellationToken = default)
     {
         var payload = new
@@ -36,10 +58,17 @@ public sealed class OpenAIChatService : IDisposable
             model = _model,
             messages = new[]
             {
-                new { role = "system", content = "You are a friendly assistant embedded in a WPF desktop app." },
+                new
+                {
+                    role = "system",
+                    content =
+                        "You are a friendly assistant embedded in a WPF desktop app. " +
+                        "Use the following references when you answer.\n\n" +
+                        "=== App Guide ===\n" + AppGuide +
+                        "\n=== Code Context ===\n" + CodeContext
+                },
                 new { role = "user", content = prompt }
             },
-            temperature = 0.7
         };
 
         using var response = await _httpClient.PostAsJsonAsync("chat/completions", payload, cancellationToken);
